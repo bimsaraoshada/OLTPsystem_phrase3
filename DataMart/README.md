@@ -57,53 +57,103 @@ See [ATTRIBUTES_SUMMARY.md](ATTRIBUTES_SUMMARY.md) for detailed attribute specif
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.7+
+- Python 3.10+
 - MySQL Server 5.7+ or 8.0+
 - pip (Python package manager)
 
-### Installation
+### Option A: Use Virtual Environment (recommended)
 
-1. **Install Python dependencies**
+1. **Create and activate venv**
 ```powershell
-pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-2. **Configure database connection**
-Edit `config.py` and update your MySQL credentials:
+2. **Install dependencies**
+```powershell
+python -m pip install -r requirements.txt
+```
+
+3. **Run scripts with venv python**
+```powershell
+python test_connection.py
+python create_db.py
+python sample_data.py
+python customers_dim.py
+python queries.py
+streamlit run app.py
+```
+
+### Option B: Run Without venv (system Python)
+
+1. **Install dependencies into system Python**
+```powershell
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe -m pip install -r requirements.txt
+```
+
+2. **Run all scripts with the same interpreter**
+```powershell
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe test_connection.py
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe create_db.py
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe sample_data.py
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe customers_dim.py
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe queries.py
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe -m streamlit run app.py
+```
+
+### Database Configuration
+
+Edit `config.py` and set your MySQL credentials:
+
 ```python
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'your_password_here',  # UPDATE THIS
-    'port': 3306
-}
+DB_USER = 'root'
+DB_PASSWORD = 'your_password_here'  # set this
+DB_HOST = 'localhost'
+DB_PORT = 3306
+DATABASE_NAME = 'oltp_sales_db'
 ```
 
-3. **Test database connection**
+If your MySQL root account has no password, keep `DB_PASSWORD = ''`.
+
+### End-to-End Setup Order
+
+1. **Test database connection**
 ```powershell
 python test_connection.py
 ```
 
-4. **Create database and tables**
+2. **Create database and tables**
 ```powershell
 python create_db.py
 ```
 
-5. **Load sample data**
+3. **Load sample data**
 ```powershell
 python sample_data.py
 ```
 
-6. **Populate the geographic dimension (required before queries)**
+4. **Populate the geographic dimension (required before queries)**
 ```powershell
 python customers_dim.py
 ```
 This creates and fills `dim_countries` and `customers_dim` with the 6-level geographic hierarchy. `queries.py` expects these tables to exist — it does **not** run `customers_dim.py` automatically.
 
-7. **Run sample queries**
+5. **Run sample queries**
 ```powershell
 python queries.py
 ```
+
+6. **Run web UI**
+```powershell
+streamlit run app.py
+```
+
+## ✅ Current System Status
+
+- `sample_data.py` fully loads OLTP and DW tables successfully.
+- `app.py` runs with Streamlit after dependencies are installed.
+- The date key generation in dimensional loading is fixed (`%Y%m%d` format).
+- The project can run with either `.venv` or system Python, as long as one interpreter is used consistently.
 
 ## 📁 File Structure
 
@@ -131,6 +181,12 @@ You can run an interactive web interface for the same OLTP + dimensional queries
 
 ```powershell
 streamlit run app.py
+```
+
+Without venv:
+
+```powershell
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe -m streamlit run app.py
 ```
 
 The UI includes:
